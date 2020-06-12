@@ -58,12 +58,14 @@ public class SimpleChatClient{
         outgoing.setFont(new Font("Ariel", Font.BOLD,20));
         outgoing.setBackground(new Color(13, 2, 8)); 
         outgoing.setForeground(Color.RED);
+        outgoing.setText("Type your message here - Press return to send or click send");
         outgoing.addActionListener(new EnterKeyListener());
         outgoing.setCaretColor(new Color(0, 255, 65));
-
+        outgoing.addFocusListener(new MyFocusListener());
+        
         sendButton = new JButton("Send");
         sendButton.addActionListener(new SendButtonListener());
-
+        
         mainPanel.add(qScroller);
         //mainPanel.add(outgoing);
         JPanel southPanel = new JPanel();
@@ -82,7 +84,7 @@ public class SimpleChatClient{
         frame.setVisible(true);
         southPanel.setBackground(Color.darkGray);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        outgoing.requestFocus();
+        incoming.requestFocus();
 
         setUpNetworking();
 
@@ -106,16 +108,18 @@ public class SimpleChatClient{
             System.out.println("Networking established");
             Thread.sleep(2000);
             incoming.append("Network Established!\n");
-            Thread.sleep(1500);
+            Thread.sleep(1000);
             incoming.append("Welcome ");
-            Thread.sleep(500);
+            Thread.sleep(300);
             incoming.append("to ");
-            Thread.sleep(500);
+            Thread.sleep(300);
             incoming.append("Ayush's ");
-            Thread.sleep(500);
+            Thread.sleep(400);
             incoming.append("Secret ");
-            Thread.sleep(500);
-            incoming.append("Portal\n\n");
+            Thread.sleep(400);
+            incoming.append("Portal\n");
+            writer.println(name + " joined the chat\n\n");
+            writer.flush();
 
         } catch(IOException ex){ex.printStackTrace();}
           catch(InterruptedException ex){ex.printStackTrace();}
@@ -152,6 +156,20 @@ public class SimpleChatClient{
                 ex.printStackTrace();
                 frame.dispose();
             }
+        }
+    }
+
+    public class MyFocusListener implements FocusListener{
+        public void focusLost(FocusEvent fe){
+            if(outgoing.getText().trim().equals(""))
+                outgoing.setText("Type your message here - Press return to send or click send");
+            else{}
+        }
+
+        public void focusGained(FocusEvent fe){
+            if(outgoing.getText().trim().equals("Type your message here - Press return to send or click send"))
+                outgoing.setText("");
+            else{}
         }
     }
 }
