@@ -1,10 +1,9 @@
 import java.io.*;
 import java.net.*;
-import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
+//import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class SimpleChatClient{
     JTextArea incoming;
@@ -14,6 +13,7 @@ public class SimpleChatClient{
     JButton sendButton;
     JButton saveButton;
     Socket sock;
+    JFrame frame;
     static String name;
     public static void main(String[] args){
         SimpleChatClient client = new SimpleChatClient();
@@ -32,13 +32,13 @@ public class SimpleChatClient{
     }
 
     public void go(String name){
-        JFrame frame = new JFrame("Ludicrously Simple Chat Client");
+        frame = new JFrame("Ludicrously Simple Chat Client");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         incoming = new JTextArea();
         incoming.setFont(new Font("Serif", Font.BOLD, 28));
-        incoming.setBackground(new Color(13, 2, 8)); //Islamic Green
-        incoming.setForeground((new Color(0, 143, 17)));
+        incoming.setBackground(new Color(13, 2, 8));
+        incoming.setForeground(new Color(0, 143, 17)); //Islamic Green
         incoming.setLineWrap(true);
         incoming.setWrapStyleWord(true);
         incoming.setEditable(false);
@@ -71,11 +71,6 @@ public class SimpleChatClient{
         southPanel.add(sendButton);
         //mainPanel.add(sendButton);
 
-        setUpNetworking();
-
-        Thread readerThread = new Thread(new IncomingReader());
-        readerThread.start();
-
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();
@@ -87,23 +82,49 @@ public class SimpleChatClient{
         frame.setVisible(true);
         southPanel.setBackground(Color.darkGray);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        outgoing.requestFocus();
+
+        setUpNetworking();
+
+        Thread readerThread = new Thread(new IncomingReader());
+        readerThread.start();
     }
 
     private void setUpNetworking(){
         try{
+            incoming.append("Connecting");
+            Thread.sleep(500);
+            incoming.append(".");
+            Thread.sleep(500);
+            incoming.append(".");
+            Thread.sleep(500);
+            incoming.append(".\n");
             sock = new Socket("127.0.0.1", 5000);
             InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
             reader = new BufferedReader(streamReader);
             writer = new PrintWriter(sock.getOutputStream());
             System.out.println("Networking established");
-            incoming.append("Network Established");
+            Thread.sleep(2000);
+            incoming.append("Network Established!\n");
+            Thread.sleep(1500);
+            incoming.append("Welcome ");
+            Thread.sleep(500);
+            incoming.append("to ");
+            Thread.sleep(500);
+            incoming.append("Ayush's ");
+            Thread.sleep(500);
+            incoming.append("Secret ");
+            Thread.sleep(500);
+            incoming.append("Portal\n\n");
+
         } catch(IOException ex){ex.printStackTrace();}
+          catch(InterruptedException ex){ex.printStackTrace();}
     }
     
     public class SendButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent ae){
             try{
-                writer.println(name + ":" + outgoing.getText());
+                writer.println(name + " : " + outgoing.getText());
                 writer.flush();
             } catch(Exception ex){
                 ex.printStackTrace();
@@ -127,7 +148,10 @@ public class SimpleChatClient{
                     System.out.println("read " + message);
                     incoming.append(message + "\n");
                 }
-            } catch(Exception ex){ex.printStackTrace();}
+            } catch(Exception ex){
+                ex.printStackTrace();
+                frame.dispose();
+            }
         }
     }
 }
