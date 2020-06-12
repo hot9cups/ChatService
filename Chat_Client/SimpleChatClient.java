@@ -3,6 +3,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 //import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class SimpleChatClient{
@@ -118,7 +119,9 @@ public class SimpleChatClient{
             incoming.append("Secret ");
             Thread.sleep(400);
             incoming.append("Portal\n");
-            writer.println(name + " joined the chat\n\n");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeZone(TimeZone.getTimeZone("GMT+5:30"));
+            writer.println(name + " joined the chat at " + "[" + calendar.getTime() + "]\n\n");
             writer.flush();
 
         } catch(IOException ex){ex.printStackTrace();}
@@ -128,7 +131,9 @@ public class SimpleChatClient{
     public class SendButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent ae){
             try{
-                writer.println(name + " : " + outgoing.getText());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeZone(TimeZone.getTimeZone("GMT+5:30"));
+                writer.println("[" + calendar.getTime() + "] " + name + " : " + outgoing.getText());
                 writer.flush();
             } catch(Exception ex){
                 ex.printStackTrace();
