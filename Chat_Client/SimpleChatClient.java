@@ -14,13 +14,24 @@ public class SimpleChatClient{
     JButton sendButton;
     JButton saveButton;
     Socket sock;
-
+    static String name;
     public static void main(String[] args){
         SimpleChatClient client = new SimpleChatClient();
-        client.go();
+        name = client.getName();
+        client.go(name);
     }
 
-    public void go(){
+    public String getName(){
+        String user = "";
+        while(user.equals("")){
+            user = JOptionPane.showInputDialog(
+            "What is your name?", null);
+            System.out.println(user);
+        }
+        return user;
+    }
+
+    public void go(String name){
         JFrame frame = new JFrame("Ludicrously Simple Chat Client");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -85,13 +96,14 @@ public class SimpleChatClient{
             reader = new BufferedReader(streamReader);
             writer = new PrintWriter(sock.getOutputStream());
             System.out.println("Networking established");
+            incoming.append("Network Established");
         } catch(IOException ex){ex.printStackTrace();}
     }
     
     public class SendButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent ae){
             try{
-                writer.println(outgoing.getText());
+                writer.println(name + ":" + outgoing.getText());
                 writer.flush();
             } catch(Exception ex){
                 ex.printStackTrace();
