@@ -59,19 +59,26 @@ public class SimpleChatClient{
         outgoing.setFont(new Font("Ariel", Font.BOLD,20));
         outgoing.setBackground(new Color(13, 2, 8)); 
         outgoing.setForeground(Color.RED);
-        outgoing.setText("Type your message here - Press return to send or click send");
+        outgoing.setText("Connecting");
+        outgoing.setEnabled(false);
         outgoing.addActionListener(new EnterKeyListener());
         outgoing.setCaretColor(new Color(0, 255, 65));
         outgoing.addFocusListener(new MyFocusListener());
         
         sendButton = new JButton("Send");
         sendButton.addActionListener(new SendButtonListener());
+        sendButton.setBackground(new Color(0,255,65));
+
+        saveButton = new JButton("Save");
+        saveButton.addActionListener(new MySaveListener());
+        saveButton.setBackground(new Color(0,255,65));
         
         mainPanel.add(qScroller);
         //mainPanel.add(outgoing);
         JPanel southPanel = new JPanel();
         southPanel.add(outgoing);
         southPanel.add(sendButton);
+        southPanel.add(saveButton);
         //mainPanel.add(sendButton);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -82,6 +89,8 @@ public class SimpleChatClient{
         frame.setLocation((int)width/8, (int)height/8);
         frame.setSize((int)(3*width/4), (int)(3*height/4));
 
+        sendButton.setVisible(false);
+        saveButton.setVisible(false);
         frame.setVisible(true);
         southPanel.setBackground(Color.darkGray);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,6 +98,10 @@ public class SimpleChatClient{
 
         setUpNetworking();
 
+        outgoing.setEnabled(true);
+        outgoing.setText("Type your message here - Press return to send or click send");
+        sendButton.setVisible(true);
+        saveButton.setVisible(true);
         Thread readerThread = new Thread(new IncomingReader());
         readerThread.start();
     }
@@ -175,6 +188,25 @@ public class SimpleChatClient{
             if(outgoing.getText().trim().equals("Type your message here - Press return to send or click send"))
                 outgoing.setText("");
             else{}
+        }
+    }
+
+    public class MySaveListener implements ActionListener{
+        public void actionPerformed(ActionEvent ae){
+            JFileChooser fileSave = new JFileChooser();
+            fileSave.showSaveDialog(frame);
+            saveFile(fileSave.getSelectedFile());
+        }
+    }   
+    
+    private void saveFile(File file) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(incoming.getText());
+            writer.close();
+        } catch(IOException ex) {
+            System.out.println("Couldn't save the chat");
+            ex.printStackTrace();
         }
     }
 }
